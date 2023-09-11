@@ -5,10 +5,17 @@ class Document {
   Document() : _json = jsonDecode(documentJson);
 
   (String, {DateTime modified}) getMetadata() {
-    const title = "My Document";
-    final now = DateTime.now();
-
-    return (title, modified: now);
+    //JSONに想定しているデータ構造が含まれている
+    if (_json.containsKey('metadata')) {
+      var metadataJson = _json['metadata'];
+      //データの型が想定通りである
+      if (metadataJson is Map) {
+        var title = metadataJson['title'] as String;
+        var localModified = DateTime.parse(metadataJson['modified'] as String);
+        return (title, modified: localModified);
+      }
+    }
+    throw const FormatException('Unexpected JSON');
   }
 }
 
