@@ -32,12 +32,13 @@ class DocumentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (title, :modified) = document.getMetadata();
+    final formattedModifiedDate = formatDate(modified);
     final blocks = document.getBlocks();
     return Scaffold(
         appBar: AppBar(title: Text(title)),
         body: Column(
           children: [
-            Text('Last modified: $modified'),
+            Text('Last modified: $formattedModifiedDate'),
             Expanded(
               child: ListView.builder(
                 itemCount: blocks.length,
@@ -69,4 +70,21 @@ class BlockWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+String formatDate(DateTime dateTime) {
+  final today = DateTime.now();
+  final difference = dateTime.difference(today);
+
+  return switch (difference) {
+    Duration(inDays: 0) => 'today',
+    Duration(inDays: 1) => 'tomorrow',
+    Duration(inDays: -1) => 'yesterday',
+    Duration(inDays: var days) when days > 7 => '${days ~/ 7} weeks from now',
+    Duration(inDays: var days) when days < -7 => '${days.abs() ~/ 7} weeks ago',
+    //更新日が過去だった場合に、days agoと表示
+    Duration(inDays: var days, isNegative: true) => '${days.abs()} days ago',
+    //differenceで処理されなかった場合は、必ず正の日数なので更新日は未来なので、days from nowと表示
+    Duration(inDays: var days) => '$days days from now',
+  };
 }
