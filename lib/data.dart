@@ -5,10 +5,17 @@ class Document {
   Document() : _json = jsonDecode(documentJson);
 
   (String, {DateTime modified}) getMetadata() {
-    const title = "My Document";
-    final now = DateTime.now();
-
-    return (title, modified: now);
+    if (_json
+        case {
+          'metadata': {
+            'title': String title,
+            'modified': String localModified,
+          }
+        }) {
+      return (title, modified: DateTime.parse(localModified));
+    } else {
+      throw const FormatException('Unexpected JSON');
+    }
   }
 }
 
