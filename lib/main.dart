@@ -58,16 +58,9 @@ class BlockWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle? textStyle;
-    switch (block.type) {
-      case 'h1':
-        textStyle = Theme.of(context).textTheme.displayMedium;
-      //pかcheckboxに一致するかどうか（&&で良い)
-      case 'p' || 'checkbox':
-        textStyle = Theme.of(context).textTheme.bodyMedium;
-      //ワイルドカード（その他の全てに一致）
-      case '_':
-        textStyle = Theme.of(context).textTheme.bodySmall;
-    }
+
+    textStyle = switch (block.type) { 'h1' => Theme.of(context).textTheme.displayMedium, 'p' || 'checkbox' => Theme.of(context).textTheme.bodyMedium, _ => Theme.of(context).textTheme.bodySmall };
+
     return Container(
       margin: const EdgeInsets.all(8),
       child: Text(
