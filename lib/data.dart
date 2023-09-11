@@ -5,6 +5,7 @@ class Document {
   Document() : _json = jsonDecode(documentJson);
 
   (String, {DateTime modified}) getMetadata() {
+    //caseパターンが_json内のデータと一致した場合のみcaseが実行される
     if (_json
         case {
           'metadata': {
@@ -15,6 +16,15 @@ class Document {
       return (title, modified: DateTime.parse(localModified));
     } else {
       throw const FormatException('Unexpected JSON');
+    }
+  }
+
+  //JSONを解析してBlockクラスのインスタンスを作成し、UIでレンダリングするブロックリストを返す
+  List<Block> getBlocks() {
+    if (_json case {'blocks': List blocksJson}) {
+      return <Block>[for (var blockJson in blocksJson) Block.fromJson(blockJson)];
+    } else {
+      throw const FormatException('Unexpected JSON format');
     }
   }
 }
@@ -42,3 +52,17 @@ const documentJson = '''
   ]
 }
 ''';
+
+class Block {
+  final String type;
+  final String text;
+  Block(this.type, this.text);
+  //Jsonからインスタンスを作成する
+  factory Block.fromJson(Map<String, dynamic> json) {
+    if (json case {'type': var type, 'text': var text}) {
+      return Block(type, text);
+    } else {
+      throw const FormatException('Unexpected JSON format');
+    }
+  }
+}
